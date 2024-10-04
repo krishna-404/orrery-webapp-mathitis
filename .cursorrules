@@ -1,0 +1,41 @@
+1. Think deeply before you start coding.
+2. Write down the steps you need to take to complete the task.
+3. Take breaks when you need to.
+4. Ask for help when you need to.
+5. Add comments to your code to explain your thinking.
+
+# Common
+  1. Use pnpm catalogs to install dependencies.
+  2. Use the `pnpm-workspace.yaml` file to manage the dependencies.
+  3. We are using TurboRepo to manage this project. The backend is in the `apps/backend` directory and the frontend is in the `apps/frontend` directory.
+  4. Use TypeScript in complete project.
+  5. Use TRPC for API communication.
+  6. Use Zod for data validation.
+
+# Backend
+  1. Use Nodejs
+  2. Use Fastify
+  3. Use OpenAPI for the API documentation
+  4. Use API versioning.
+
+# Frontend
+  1. React
+  2. Use TailwindCSS
+  3. Use Three.js
+  4. Use React Query for data fetching.
+  5. Use React Router for navigation.
+
+# Datasets
+  1. Use the NASA API to get the data for the orrery.
+    - Asteroids NeoWs (Near Earth Object Web Service): Provides data on NEOs.
+    - Exoplanet Archive API: For planetary data.
+    - Minor Planet Center: For comet data.
+    - NASA Exoplanet Archive: For exoplanet data.
+    - Open Exoplanet Catalogue: For exoplanet data.
+    - Planetary Satellite Mean Orbital Parameters: For satellite data.
+    - Solar System Dynamics: For solar system data.
+    - Solar System Exploration: For solar system data.
+    - Solar System Exploration: For solar system data.
+  2. Use the Hipparcos data to get the data for the orrery.
+  3. Use the JPL data to get the data for the orrery.
+    - JPL Small-Body Database: For asteroid data.
