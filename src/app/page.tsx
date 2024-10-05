@@ -2,13 +2,57 @@
 
 import { NearEarthObject, Planet, Sun } from '@/components/CelestialBodies'
 import Controls from '@/components/Controls'
+import { planetOrbits } from '@/data/planetOrbits'
 import { OrbitControls, Stars } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { useState } from 'react'
+import Papa from 'papaparse'
+import { useEffect, useState } from 'react'
+
+interface NEOData {
+  full_name: string
+  a: string // semi-major axis
+  e: string // eccentricity
+  i: string // inclination
+  H: string // absolute magnitude
+}
 
 function App() {
   const [showOrbits, setShowOrbits] = useState(true)
   const [showLabels, setShowLabels] = useState(true)
+  const [neoData, setNeoData] = useState<NEOData[]>([])
+
+  useEffect(() => {
+    fetch('/data/sbdb_query_results.csv')
+      .then(response => response.text())
+      .then(csvString => {
+        const { data } = Papa.parse<NEOData>(csvString, { header: true })
+        setNeoData(data)
+      })
+  }, [])
+
+  const renderNEOs = () => {
+    return neoData.map((neo, index) => {
+      const distance = parseFloat(neo.a) * 10 // Scale the semi-major axis
+      const size = 20 - parseFloat(neo.H) // Use absolute magnitude for size
+      const color = `hsl(${index * 30 % 360}, 100%, 50%)` // Generate a unique color
+
+      return (
+        <NearEarthObject
+          key={neo.full_name}
+          name={neo.full_name}
+          distance={distance}
+          size={Math.max(0.1, size / 10)} // Ensure minimum size
+          color={color}
+          orbitColor={color}
+          showOrbit={showOrbits}
+          showLabel={showLabels}
+          orbitSpeed={1 / distance} // Slower orbit for farther objects
+          inclination={parseFloat(neo.i)}
+          eccentricity={parseFloat(neo.e)}
+        />
+      )
+    })
+  }
 
   return (
     <div className="w-full h-screen bg-black">
@@ -18,16 +62,20 @@ function App() {
         <pointLight position={[0, 0, 0]} intensity={2} color="#FDB813" />
         <Stars radius={300} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
         <Sun />
-        <Planet name="Mercury" distance={5.8} size={0.38} color="#8c7853" orbitColor="#8c7853" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={4.74} />
-        <Planet name="Venus" distance={10.8} size={0.95} color="#ffd700" orbitColor="#ffd700" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={3.5} />
-        <Planet name="Earth" distance={15} size={1} color="#4169e1" orbitColor="#4169e1" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={2.98} />
-        <Planet name="Mars" distance={22.8} size={0.53} color="#ff4500" orbitColor="#ff4500" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={2.41} />
-        <Planet name="Jupiter" distance={77.8} size={11.2} color="#ffa500" orbitColor="#ffa500" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={1.31} />
-        <Planet name="Saturn" distance={143} size={9.45} color="#f4c542" orbitColor="#f4c542" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={0.97} />
-        <Planet name="Uranus" distance={287} size={4} color="#40e0d0" orbitColor="#40e0d0" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={0.68} />
-        <Planet name="Neptune" distance={450} size={3.88} color="#4169e1" orbitColor="#4169e1" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={0.54} />
-        <NearEarthObject name="NEO 1" distance={18} size={0.1} color="#ff00ff" orbitColor="#ff00ff" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={3.5} />
-        <NearEarthObject name="NEO 2" distance={25} size={0.15} color="#00ffff" orbitColor="#00ffff" showOrbit={showOrbits} showLabel={showLabels} orbitSpeed={3} />
+        {planetOrbits.map((planet) => (
+          <Planet
+            key={planet.name}
+            name={planet.name}
+            distance={planet.distance}
+            size={planet.size}
+            color={planet.color}
+            orbitColor={planet.orbitColor}
+            showOrbit={showOrbits && planet.showOrbit}
+            showLabel={showLabels && planet.showLabel}
+            orbitSpeed={planet.orbitSpeed}
+          />
+        ))}
+        {renderNEOs()}
         <OrbitControls enablePan={false} enableZoom={true} enableRotate={true} />
       </Canvas>
       <Controls
