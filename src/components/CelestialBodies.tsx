@@ -100,7 +100,7 @@ export const NearEarthObject: React.FC<{
   const orbitRef = useRef<THREE.Group>(null)
   const objectRef = useRef<THREE.Mesh>(null)
 
-  useFrame((state) => {
+  useFrame(() => {
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed * 0.02
     }
